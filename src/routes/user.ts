@@ -16,9 +16,10 @@ const router = Router()
         INSERT INTO USER(id, name, email, password, creation_date, refresh_token)
         VALUES ('${uuidv1()}', '${req.body.username}', '${req.body.email}', '${await bcrypt.hash(req.body.password, 10)}', UTC_TIMESTAMP, NULL)
         `
-        const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
+        
         try
         {
+            const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
             await connection.query(query)
             res.status(200).json({messsage: "User created with success"})
             return
