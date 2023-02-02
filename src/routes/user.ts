@@ -45,7 +45,7 @@ const router = Router()
             if(req.body.username != null) //login with username
             {
                 const username_query = `
-                SELECT name, password
+                SELECT id, email, password, name, creation_date
                 FROM USER
                 WHERE name='${req.body.username}'
                 `
@@ -58,8 +58,8 @@ const router = Router()
                 }
                 //@ts-ignore
                 let db_password = db_res[0][0].password
-                if((await bcrypt.compare(req.body.password, db_password)) === true)
-                    res.status(200).json({message: "User logged with success"})
+                if((await bcrypt.compare(req.body.password, db_password)) === true)//@ts-ignore
+                    res.status(200).json({message: "User logged with success", user_data: {id: db_res[0][0].id, name: db_res[0][0].name, email: db_res[0][0].email, creation_date: db_res[0][0].creation_date}})
                 else
                     res.status(403).json({message: "Wrong password"})
                 return
@@ -67,7 +67,7 @@ const router = Router()
             else //login with email
             {
                 const email_query = `
-                SELECT email, password
+                SELECT id, email, password, name, creation_date
                 FROM USER
                 WHERE email='${req.body.email}'
                 `
@@ -80,8 +80,8 @@ const router = Router()
                 }
                 //@ts-ignore
                 let db_password = db_res[0][0].password
-                if((await bcrypt.compare(req.body.password, db_password)) === true)
-                    res.status(200).json({message: "User logged with success"})
+                if((await bcrypt.compare(req.body.password, db_password)) === true)//@ts-ignore
+                    res.status(200).json({message: "User logged with success", user_data: {id: db_res[0][0].id, name: db_res[0][0].name, email: db_res[0][0].email, creation_date: db_res[0][0].creation_date}})
                 else
                     res.status(403).json({message: "Wrong password"})
                 return
