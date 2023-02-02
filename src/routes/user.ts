@@ -34,6 +34,7 @@ const router = Router()
 
 
     router.post("/login", async(req:Request, res:Response)=>{  // LOGIN USER
+        console.log(req.body)
         if(req.body == null || req.body.password == null || (req.body.username == null && req.body.email == null) || (req.body.username != null && req.body.email != null))
         {
             res.status(403).json({error: "Bad Request Body"})
@@ -53,7 +54,7 @@ const router = Router()
                 //@ts-ignore
                 if(db_res[0].length !== 1)
                 {
-                    res.status(404).json({error: "User doesn't exist"})
+                    res.status(200).json({message: "User doesnt exist"})
                     return
                 }
                 //@ts-ignore
@@ -61,7 +62,7 @@ const router = Router()
                 if((await bcrypt.compare(req.body.password, db_password)) === true)//@ts-ignore
                     res.status(200).json({message: "User logged with success", user_data: {id: db_res[0][0].id, name: db_res[0][0].name, email: db_res[0][0].email, creation_date: db_res[0][0].creation_date}})
                 else
-                    res.status(403).json({message: "Wrong password"})
+                    res.status(200).json({message: "Wrong password"})
                 return
             }
             else //login with email
@@ -75,7 +76,7 @@ const router = Router()
                 //@ts-ignore
                 if(db_res[0].length !== 1)
                 {
-                    res.status(404).json({error: "User doesn't exist"})
+                    res.status(200).json({message: "User doesnt exist"})
                     return
                 }
                 //@ts-ignore
@@ -83,7 +84,7 @@ const router = Router()
                 if((await bcrypt.compare(req.body.password, db_password)) === true)//@ts-ignore
                     res.status(200).json({message: "User logged with success", user_data: {id: db_res[0][0].id, name: db_res[0][0].name, email: db_res[0][0].email, creation_date: db_res[0][0].creation_date}})
                 else
-                    res.status(403).json({message: "Wrong password"})
+                    res.status(200).json({message: "Wrong password"})
                 return
             }
         }
