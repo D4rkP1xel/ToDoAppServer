@@ -37,7 +37,7 @@ router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
     }
         const query = `
         INSERT INTO TASK(id, name, date, user_id, is_done)
-        VALUES ('${uuidv1()}', '${req.body.name}', '${req.body.date}', '${req.body.user_id}', -1)
+        VALUES ('${uuidv1()}', '${req.body.task_name}', DATE("${req.body.task_date}"), '${req.body.user_id}', -1)
         `
         try
         {
