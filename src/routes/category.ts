@@ -84,7 +84,7 @@ router.post("/remove", async(req:Request, res:Response)=>{
         }
 })
 
-router.post("/rename", async(req:Request, res:Response)=>{
+router.post("/rename", async(req:Request, res:Response)=>{ //NOT IMPLEMENTED ON THE FRONTEND, possible idea is when holding the category name, show an option to change its name
     if(req.body == null || req.body.user_id == null || req.body.new_category_name == null || req.body.old_category_name == null)
     {
         res.status(403).json({error: "Bad Request Body"})

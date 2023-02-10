@@ -36,8 +36,8 @@ router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
         return
     }
         const query = `
-        INSERT INTO TASK(id, name, date, user_id, is_done)
-        VALUES ('${uuidv1()}', '${req.body.task_name.trim()}', DATE("${req.body.task_date}"), '${req.body.user_id}', -1)
+        INSERT INTO TASK(id, name, date, user_id, is_done, task_category_name, task_time)
+        VALUES ('${uuidv1()}', '${req.body.task_name.trim()}', DATE("${req.body.task_date}"), '${req.body.user_id}', -1, NULL, 0)
         `
         try
         {
@@ -128,6 +128,34 @@ router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
             const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
             await connection.query(query)
             res.status(200).json({message: "Task Done Status updated with success"})
+            return
+        }
+        
+        catch(err)
+        {
+            console.log(err)
+            res.status(503).json({error: "Server Error"})
+            return
+        }
+
+  })
+
+  router.post("/changeCategory", async(req:Request, res:Response)=>{  //CHANGE task_category_name OF TASK
+    if(req.body == null || req.body.task_id == null || req.body.task_category_name == null)
+    {
+        res.status(403).json({error: "Bad Request Body"})
+        return
+    }
+        const query = `
+        UPDATE TASK
+        SET task_category_name='${req.body.task_category_name}'
+        WHERE id='${req.body.task_id}'
+        `
+        try
+        {
+            const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
+            await connection.query(query)
+            res.status(200).json({message: "Task category updated with success"})
             return
         }
         
