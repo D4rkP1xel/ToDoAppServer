@@ -36,6 +36,7 @@ router.post("/getMonthPerformance",  async(req:Request, res:Response)=>{ //GET S
         res.status(403).json({error: "Bad Request Body"})
         return
     }
+    
     const query = `
     SELECT date, is_done 
     FROM TASK 
@@ -46,7 +47,11 @@ router.post("/getMonthPerformance",  async(req:Request, res:Response)=>{ //GET S
     {
         const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
         const data:any = (await connection.query(query))[0]
-        if(data.length === 0) res.status(200).json({data: {}})
+      
+        if(data.length === 0) 
+        {res.status(200).json({data: {}})
+        return
+    }
         let result:any = {}
         data.map((obj: {date: Date , is_done: number})=>{
             let dateAux = `${obj.date.getUTCFullYear()}-${(obj.date.getUTCMonth() +1).toString().padStart(2, '0')}-${(obj.date.getUTCDate()).toString().padStart(2, '0')}`
@@ -59,11 +64,11 @@ router.post("/getMonthPerformance",  async(req:Request, res:Response)=>{ //GET S
                 else if(obj.is_done === -1)result[dateAux].tasks_not_done++
             }
         })
-
+        
         Object.keys(result).forEach((key)=>{
             let obj = result[key]
             if(obj.num_tasks === obj.tasks_done)  result[key] = {selected: true,selectedColor: "#10b981",selectedTextColor: "white"}
-            else if(obj.tasks_done>0) result[key] = {"2023-02-03": {selected: true,selectedColor: "#fbbf24",selectedTextColor: "white",}}
+            else if(obj.tasks_done>0 || obj.tasks_half_done>0) result[key] = {selected: true,selectedColor: "#fbbf24",selectedTextColor: "white"}
             else delete result[key]
         })
         console.log(result)
