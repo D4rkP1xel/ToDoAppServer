@@ -3,7 +3,7 @@ import {v1 as uuidv1} from "uuid"
 import mysql from 'mysql2/promise'
 const router = Router()
 
-router.post("/get",  async(req:Request, res:Response)=>{
+router.post("/get",  async(req:Request, res:Response)=>{ //GET SINGLE TASK
     if(req.body == null || req.body.user_id == null || req.body.date == null)
     {
         res.status(403).json({error: "Bad Request Body"})
@@ -29,6 +29,54 @@ router.post("/get",  async(req:Request, res:Response)=>{
         }
 })
 
+router.post("/getMonthPerformance",  async(req:Request, res:Response)=>{ //GET SUCCESSFUL DAYS
+
+    if(req.body == null || req.body.user_id == null || req.body.date == null) //date must be in this format -> "2023-02"
+    {
+        res.status(403).json({error: "Bad Request Body"})
+        return
+    }
+    const query = `
+    SELECT date, is_done 
+    FROM TASK 
+    WHERE user_id='${req.body.user_id}' 
+    AND SUBSTRING(date, 1,7)='${req.body.date}'
+    `
+    try
+    {
+        const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
+        const data:any = (await connection.query(query))[0]
+        if(data.length === 0) res.status(200).json({data: {}})
+        let result:any = {}
+        data.map((obj: {date: Date , is_done: number})=>{
+            let dateAux = `${obj.date.getUTCFullYear()}-${(obj.date.getUTCMonth() +1).toString().padStart(2, '0')}-${(obj.date.getUTCDate()).toString().padStart(2, '0')}`
+            if(result[dateAux] == null) result[dateAux] = {num_tasks: 1, tasks_done : obj.is_done === 1 ? 1 : 0, tasks_half_done: obj.is_done === 0 ? 1 : 0, tasks_not_done: obj.is_done === -1 ? 1 : 0  }
+            else
+            {
+                result[dateAux].num_tasks++
+                if(obj.is_done === 1) result[dateAux].tasks_done++
+                else if(obj.is_done === 0)result[dateAux].tasks_half_done++
+                else if(obj.is_done === -1)result[dateAux].tasks_not_done++
+            }
+        })
+
+        Object.keys(result).forEach((key)=>{
+            let obj = result[key]
+            if(obj.num_tasks === obj.tasks_done)  result[key] = {selected: true,selectedColor: "#10b981",selectedTextColor: "white"}
+            else if(obj.tasks_done>0) result[key] = {"2023-02-03": {selected: true,selectedColor: "#fbbf24",selectedTextColor: "white",}}
+            else delete result[key]
+        })
+        console.log(result)
+        res.status(200).json({data: result})
+        return
+    }
+    catch(err)
+    {
+        console.log(err)
+        res.status(503).json({error: "Server Error"})
+        return
+    }
+})
 router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
     if(req.body == null || req.body.task_name == null || req.body.task_date == null || req.body.user_id == null)
     {
@@ -37,7 +85,7 @@ router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
     }
         const query = `
         INSERT INTO TASK(id, name, date, user_id, is_done, task_category_name, task_time)
-        VALUES ('${uuidv1()}', '${req.body.task_name.trim()}', DATE("${req.body.task_date}"), '${req.body.user_id}', -1, NULL, 0)
+        VALUES ('${uuidv1()}', '${req.body.task_name.trim()}', DATE("${req.body.task_date}"), '${req.body.user_id}', -1, 'None', 0)
         `
         try
         {
