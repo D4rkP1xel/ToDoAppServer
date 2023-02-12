@@ -71,7 +71,7 @@ router.post("/getMonthPerformance",  async(req:Request, res:Response)=>{ //GET S
             else if(obj.tasks_done>0 || obj.tasks_half_done>0) result[key] = {selected: true,selectedColor: "#fbbf24",selectedTextColor: "white"}
             else delete result[key]
         })
-        console.log(result)
+        //console.log(result)
         res.status(200).json({data: result})
         return
     }
@@ -171,6 +171,7 @@ router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
         res.status(403).json({error: "Bad Request Body"})
         return
     }
+    console.log(req.body)
         const query = `
         UPDATE TASK
         SET is_done='${req.body.is_done}'
