@@ -171,7 +171,7 @@ router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
         res.status(403).json({error: "Bad Request Body"})
         return
     }
-    console.log(req.body)
+    
         const query = `
         UPDATE TASK
         SET is_done='${req.body.is_done}'
@@ -221,4 +221,34 @@ router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
         }
 
   })
+
+  router.post("/changeTaskTime", async(req:Request, res:Response)=>{  //CHANGE task_time OF TASK
+    if(req.body == null || req.body.task_id == null || req.body.task_time == null)
+    {
+        res.status(403).json({error: "Bad Request Body"})
+        return
+    }
+    
+        const query = `
+        UPDATE TASK
+        SET task_time='${req.body.task_time}'
+        WHERE id='${req.body.task_id}'
+        `
+        try
+        {
+            const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
+            await connection.query(query)
+            res.status(200).json({message: "Task Time updated with success"})
+            return
+        }
+        
+        catch(err)
+        {
+            console.log(err)
+            res.status(503).json({error: "Server Error"})
+            return
+        }
+
+  })
+
 export {router}
