@@ -110,4 +110,61 @@ router.post("/rename", async(req:Request, res:Response)=>{ //NOT IMPLEMENTED ON 
             return
         }
 })
+
+router.post("/getPerformance", async(req:Request, res:Response)=>{
+    if(req.body == null || req.body.user_id == null ||  req.body.category_name == null || req.body.type == null || (req.body.type !== "monthly" && req.body.type !== "daily" && req.body.type !== "weekly"))
+    {
+        res.status(403).json({error: "Bad Request Body"})
+        return
+    }
+    let query 
+    
+    if(req.body.type === "monthly")
+    {
+        query = `
+        SELECT DATE_FORMAT(date, '%Y-%m') AS date, SUM(task_time) as total_time
+        FROM TASK
+        WHERE date >= DATE_SUB(DATE_FORMAT(CURDATE(),'%Y-%m-01'),INTERVAL 1 YEAR) 
+        AND user_id='${req.body.user_id}' 
+        AND task_category_name='${req.body.category_name}'
+        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        ORDER BY DATE_FORMAT(date, '%Y-%m')
+        `
+    }
+    else if(req.body.type === "weekly") //NOT DONE
+    {
+        query = `
+        SELECT DATE_FORMAT(date, '%Y-%m') AS date, SUM(task_time) as total_time
+        FROM TASK
+        WHERE date >= DATE_SUB(DATE_FORMAT(CURDATE(),'%Y-%m-01'),INTERVAL 1 YEAR) 
+        AND user_id='${req.body.user_id}' 
+        AND task_category_name='${req.body.category_name}'
+        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        `
+    }
+    else //DAILY
+    {
+        query = `
+        SELECT DATE_FORMAT(date, '%Y-%m') AS date, SUM(task_time) as total_time
+        FROM TASK
+        WHERE date >= DATE_SUB(DATE_FORMAT(CURDATE(),'%Y-%m-01'),INTERVAL 1 YEAR) 
+        AND user_id='${req.body.user_id}' 
+        AND task_category_name='${req.body.category_name}'
+        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        `
+    }
+        try
+        {
+            const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
+            const tasks = (await connection.query(query))[0]
+            res.status(200).json({message: "Success", tasks: tasks})
+            return
+        }
+        catch(err)
+        {
+            console.log(err)
+            res.status(503).json({error: "Server Error"})
+            return
+        }
+})
 export {router}
