@@ -131,26 +131,28 @@ router.post("/getPerformance", async(req:Request, res:Response)=>{
         ORDER BY DATE_FORMAT(date, '%Y-%m')
         `
     }
-    else if(req.body.type === "weekly") //NOT DONE
+    else if(req.body.type === "weekly")
     {
         query = `
-        SELECT DATE_FORMAT(date, '%Y-%m') AS date, SUM(task_time) as total_time
+        SELECT DATE_ADD(date, INTERVAL(-WEEKDAY(date)) DAY) AS date, SUM(task_time) as total_time
         FROM TASK
-        WHERE date >= DATE_SUB(DATE_FORMAT(CURDATE(),'%Y-%m-01'),INTERVAL 1 YEAR) 
+        WHERE DATE_ADD(date, INTERVAL(-WEEKDAY(date)) DAY) >= DATE_SUB(DATE_ADD(CURDATE(), INTERVAL(-WEEKDAY(CURDATE())) DAY),INTERVAL 10 WEEK) 
         AND user_id='${req.body.user_id}' 
         AND task_category_name='${req.body.category_name}'
-        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        GROUP BY DATE_ADD(date, INTERVAL(-WEEKDAY(date)) DAY)
+        ORDER BY DATE_ADD(date, INTERVAL(-WEEKDAY(date)) DAY)
         `
     }
     else //DAILY
     {
         query = `
-        SELECT DATE_FORMAT(date, '%Y-%m') AS date, SUM(task_time) as total_time
+        SELECT date, SUM(task_time) as total_time
         FROM TASK
-        WHERE date >= DATE_SUB(DATE_FORMAT(CURDATE(),'%Y-%m-01'),INTERVAL 1 YEAR) 
+        WHERE date >= DATE_SUB(CURDATE(),INTERVAL 8 DAY)  
         AND user_id='${req.body.user_id}' 
         AND task_category_name='${req.body.category_name}'
-        GROUP BY DATE_FORMAT(date, '%Y-%m')
+        GROUP BY date
+        ORDER BY date
         `
     }
         try
