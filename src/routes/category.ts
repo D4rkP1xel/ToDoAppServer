@@ -169,4 +169,46 @@ router.post("/getPerformance", async(req:Request, res:Response)=>{
             return
         }
 })
+
+router.post("/getPerformanceStats", async(req:Request, res:Response)=>{
+    if(req.body == null || req.body.user_id == null ||  req.body.category_name == null)
+    {
+        res.status(403).json({error: "Bad Request Body"})
+        return
+    }
+
+    let query = `
+    SELECT 
+    (SELECT SUM(task_time)
+    FROM TASK
+    WHERE date >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)  
+    AND user_id='${req.body.user_id}' 
+    AND task_category_name='${req.body.category_name}') 
+    AS total_time_week,
+    (SELECT SUM(task_time)
+    FROM TASK
+    WHERE date >= DATE_SUB(CURDATE(),INTERVAL 30 DAY)  
+    AND user_id='${req.body.user_id}' 
+    AND task_category_name='${req.body.category_name}') 
+    AS total_time_month,
+    (SELECT SUM(task_time)
+    FROM TASK
+    WHERE user_id='${req.body.user_id}' 
+    AND task_category_name='${req.body.category_name}') 
+    AS total_time
+    `
+    try
+        {
+            const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
+            const data = (await connection.query(query))[0]
+            res.status(200).json({message: "Success", data: data})
+            return
+        }
+        catch(err)
+        {
+            console.log(err)
+            res.status(503).json({error: "Server Error"})
+            return
+        }
+})
 export {router}
