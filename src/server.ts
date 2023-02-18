@@ -4,7 +4,7 @@ import {router as userRouter} from './routes/user'
 import {router as taskRouter} from './routes/task'
 import {router as categoryRouter} from './routes/category'
 import 'dotenv/config'
-
+const port = process.env.PORT || 3001
 const app = express()
 app.use(cors({origin: true, credentials: true}))
 app.use(express.json())
@@ -17,4 +17,4 @@ app.use("/user" , userRouter)
 app.use("/task" , taskRouter)
 app.use("/category" , categoryRouter)
 //userRouter(app)
-app.listen(3001)
+app.listen(port)

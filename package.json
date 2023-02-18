@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "start": "ts-node src/server.ts",
     "dev": "nodemon --exec ts-node src/server.ts"
   },
   "author": "",
