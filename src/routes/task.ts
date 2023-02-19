@@ -83,14 +83,16 @@ router.post("/getMonthPerformance",  async(req:Request, res:Response)=>{ //GET S
     }
 })
 router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
-    if(req.body == null || req.body.task_name == null || req.body.task_date == null || req.body.user_id == null)
+    
+    if(req.body == null || req.body.task_name == null || req.body.task_date == null || req.body.user_id == null || req.body.is_done == null || req.body.category_name == null || req.body.task_time == null)
     {
         res.status(403).json({error: "Bad Request Body"})
         return
     }
+    //console.log(req.body)
         const query = `
         INSERT INTO TASK(id, name, date, user_id, is_done, task_category_name, task_time)
-        VALUES ('${uuidv1()}', '${req.body.task_name.trim()}', DATE("${req.body.task_date}"), '${req.body.user_id}', -1, 'None', 0)
+        VALUES ('${uuidv1()}', '${req.body.task_name.trim()}', DATE("${req.body.task_date}"), '${req.body.user_id}', ${req.body.is_done}, '${req.body.category_name}', ${req.body.task_time})
         `
         try
         {
