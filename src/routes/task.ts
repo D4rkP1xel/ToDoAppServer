@@ -89,6 +89,7 @@ router.post("/add", async(req:Request, res:Response)=>{  // ADD TASK
         res.status(403).json({error: "Bad Request Body"})
         return
     }
+    
         const query = `
         INSERT INTO TASK(id, name, date, user_id, is_done, task_category_name, task_time)
         VALUES ('${uuidv1()}', '${req.body.task_name.trim()}', DATE("${req.body.task_date}"), '${req.body.user_id}', ${req.body.is_done}, '${req.body.category_name}', ${req.body.task_time})
