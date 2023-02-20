@@ -34,6 +34,7 @@ const router = Router()
 
 
     router.post("/login", async(req:Request, res:Response)=>{  // LOGIN USER
+        console.log("recebi")
         if(req.body == null || req.body.password == null || (req.body.username == null && req.body.email == null) || (req.body.username != null && req.body.email != null))
         {
             res.status(403).json({error: "Bad Request Body"})
