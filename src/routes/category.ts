@@ -79,6 +79,10 @@ router.post("/remove", async (req: Request, res: Response) => {
         DELETE
         FROM CATEGORY
         WHERE name='${req.body.category_name}' AND user_id='${req.body.user_id}'
+        UNION
+        UPDATE TASK
+        SET category_name='None'
+        WHERE user_id='${req.body.user_id}' AND category_name='${req.body.category_name}'
         `
   try {
     const connection = await mysql.createConnection(
