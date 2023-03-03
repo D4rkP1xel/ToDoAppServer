@@ -75,6 +75,7 @@ router.post("/remove", async (req: Request, res: Response) => {
     res.status(403).json({ error: "Bad Request Body" })
     return
   }
+
   const query = `
         DELETE
         FROM CATEGORY
