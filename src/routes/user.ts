@@ -35,6 +35,7 @@ router.post("/login", async (req: Request, res: Response) => {  // LOGIN USER
         res.status(403).json({ error: "Bad Request Body" })
         return
     }
+
     try {
         const connection = await mysql.createConnection(process.env.DATABASE_URL || '')
         if (req.body.username != null) //login with username
