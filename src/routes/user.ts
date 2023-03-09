@@ -92,3 +92,14 @@ router.post("/login", async (req: Request, res: Response) => {  // LOGIN USER
 
 
 export { router }
+
+/*
+saturday push       saturday chest triceps
+sunday pull         sunday   back biceps
+monday legs         monday   legs shoulders
+tuesday rest        tuesday  rest
+wednesday push      wednesday chest triceps
+thursday pull       thursday  back biceps
+friday rest         friday    rest
+
+*/
