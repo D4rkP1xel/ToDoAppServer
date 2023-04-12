@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express"
 import { v1 as uuidv1 } from "uuid"
 import mysql from "mysql2/promise"
+
 const router = Router()
 
 router.post("/get", async (req: Request, res: Response) => {
@@ -48,9 +49,8 @@ router.post("/add", async (req: Request, res: Response) => {
   const query = `
         INSERT
         INTO CATEGORY(id, name, user_id)
-        VALUES('${uuidv1()}', '${req.body.category_name.trim()}', '${
-    req.body.user_id
-  }')
+        VALUES('${uuidv1()}', '${req.body.category_name.trim()}', '${req.body.user_id
+    }')
         `
   try {
     const connection = await mysql.createConnection(
